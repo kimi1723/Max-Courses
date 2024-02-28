@@ -8,8 +8,9 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
 	res.render('shop', {
+		pageTitle: 'My shop',
 		products,
-		docTitle: "My shop"
+		path: '/',
 	});
 });
 
