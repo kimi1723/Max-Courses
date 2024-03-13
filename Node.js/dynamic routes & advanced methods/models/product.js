@@ -43,7 +43,21 @@ module.exports = class Product {
 		});
 	}
 
-	
+	static delete(id, cb) {
+		getProductsFromFile(products => {
+			const existingProductIndex = products.findIndex(product => product.id === id);
+
+			if (existingProductIndex === -1) {
+				return cb({ error: true, message: 'Product not found!' });
+			}
+
+			const updatedProducts = [...products];
+			updatedProducts.splice(existingProductIndex, 1);
+
+			fs.writeFile(path, JSON.stringify(updatedProducts), err => console.log(err));
+		});
+	}
+
 	static fetchAll(cb) {
 		getProductsFromFile(cb);
 	}
