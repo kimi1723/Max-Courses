@@ -23,14 +23,19 @@ exports.getProduct = (req, res, next) => {
 	});
 };
 
-exports.getIndex = (req, res, next) => {
-	Product.fetchAll(products => {
+exports.getIndex = async (req, res, next) => {
+	try {
+		const [rows] = await Product.fetchAll();
+
 		res.render('shop/index', {
-			prods: products,
+			prods: rows,
 			pageTitle: 'Shop',
 			path: '/',
 		});
-	});
+	} catch (err) {
+		res.render('404', { pageTitle: 'Not found', path: '/404' });
+		console.log(err);
+	}
 };
 
 exports.getCart = (req, res, next) => {

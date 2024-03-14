@@ -1,19 +1,5 @@
-const fs = require('fs');
-
-const { getPath } = require('../util/path');
+const db = require('../util/database');
 const Cart = require('./cart');
-
-const path = getPath(['data'], 'products.json');
-
-const getProductsFromFile = cb => {
-	fs.readFile(path, (err, fileContent) => {
-		if (err) {
-			cb([]);
-		} else {
-			cb(JSON.parse(fileContent));
-		}
-	});
-};
 
 module.exports = class Product {
 	constructor(id, title, imageUrl, description, price) {
@@ -24,55 +10,13 @@ module.exports = class Product {
 		this.price = price;
 	}
 
-	save() {
-		getProductsFromFile(products => {
-			if (this.id) {
-				const existingProductIndex = products.findIndex(prod => prod.id === this.id);
-				const updatedProducts = [...products];
-				updatedProducts[existingProductIndex] = this;
+	save() {}
 
-				fs.writeFile(path, JSON.stringify(updatedProducts), err => {
-					console.log(err);
-				});
-			} else {
-				this.id = new Date().getTime().toString() + Math.random().toString();
+	static delete(id) {}
 
-				products.push(this);
-				fs.writeFile(path, JSON.stringify(products), err => {
-					console.log(err);
-				});
-			}
-		});
+	static fetchAll() {
+		return db.execute('SELECT * FROM products');
 	}
 
-	static delete(id, cb) {
-		getProductsFromFile(products => {
-			const existingProductIndex = products.findIndex(product => product.id === id);
-			if (existingProductIndex === -1) {
-				return cb({ error: true, message: 'Product not found!' });
-			}
-			const product = products[existingProductIndex];
-			const updatedProducts = [...products];
-			updatedProducts.splice(existingProductIndex, 1);
-
-			fs.writeFile(path, JSON.stringify(updatedProducts), err => {
-				if (err) {
-					return console.log(err);
-				}
-
-				Cart.deleteProduct(id, product.price);
-			});
-		});
-	}
-
-	static fetchAll(cb) {
-		getProductsFromFile(cb);
-	}
-
-	static findById(id, cb) {
-		getProductsFromFile(products => {
-			const product = products.find(p => p.id === id);
-			cb(product);
-		});
-	}
+	static findById(id) {}
 };
