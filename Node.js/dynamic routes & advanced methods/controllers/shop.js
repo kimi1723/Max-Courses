@@ -1,13 +1,31 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-exports.getProducts = (req, res, next) => {
-	Product.fetchAll(products => {
-		res.render('shop/product-list', {
-			prods: products,
-			pageTitle: 'All Products',
-			path: '/products',
-		});
+const fetchData = async () => {
+	try {
+		const [rows] = await Product.fetchAll();
+
+		return rows;
+	} catch (err) {
+		return {
+			error: true,
+			errorData: err,
+		};
+	}
+};
+
+exports.getProducts = async (req, res, next) => {
+	const data = await fetchData();
+
+	if (data.error) {
+		console.log(data.errorData);
+		return res.render('404', { pageTitle: 'Not found', path: '/404' });
+	}
+
+	res.render('shop/product-list', {
+		prods: data,
+		pageTitle: 'All Products',
+		path: '/products',
 	});
 };
 
@@ -24,18 +42,18 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = async (req, res, next) => {
-	try {
-		const [rows] = await Product.fetchAll();
+	const data = await fetchData();
 
-		res.render('shop/index', {
-			prods: rows,
-			pageTitle: 'Shop',
-			path: '/',
-		});
-	} catch (err) {
-		res.render('404', { pageTitle: 'Not found', path: '/404' });
-		console.log(err);
+	if (data.error) {
+		console.log(data.errorData);
+		return res.render('404', { pageTitle: 'Not found', path: '/404' });
 	}
+
+	res.render('shop/index', {
+		prods: data,
+		pageTitle: 'Shop',
+		path: '/',
+	});
 };
 
 exports.getCart = (req, res, next) => {
