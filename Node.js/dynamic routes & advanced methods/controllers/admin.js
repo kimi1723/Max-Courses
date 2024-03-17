@@ -27,11 +27,13 @@ exports.postAddProduct = async (req, res, next) => {
 	}
 };
 
-exports.getEditProduct = (req, res, next) => {
+exports.getEditProduct = async (req, res, next) => {
 	const editMode = req.query.edit;
 	const productId = req.params.productId;
 
-	Product.findById(productId, product => {
+	try {
+		const product = await Product.findByPk(productId);
+
 		if (!product) {
 			return res.redirect('/admin/products');
 		}
@@ -42,16 +44,31 @@ exports.getEditProduct = (req, res, next) => {
 			editing: editMode,
 			product,
 		});
-	});
+	} catch (err) {
+		console.log(err);
+	}
 };
 
-exports.postEditProduct = (req, res, next) => {
+exports.postEditProduct = async (req, res, next) => {
 	const { productId, title, price, imageUrl, description } = req.body;
-	const updatedProduct = new Product(productId, title, imageUrl, description, price);
 
-	updatedProduct.save();
+	try {
+		const product = await Product.findByPk(productId);
 
-	res.redirect('/admin/products');
+		product.set({
+			title,
+			price,
+			imageUrl,
+			description,
+		});
+
+		await product.save();
+
+		console.log('Updated product');
+		res.redirect('/admin/products');
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -66,12 +83,16 @@ exports.postDeleteProduct = (req, res, next) => {
 	res.redirect('/admin/products');
 };
 
-exports.getProducts = (req, res, next) => {
-	Product.fetchAll(products => {
+exports.getProducts = async (req, res, next) => {
+	try {
+		const products = await Product.findAll();
+
 		res.render('admin/products', {
 			prods: products,
 			pageTitle: 'Admin Products',
 			path: '/admin/products',
 		});
-	});
+	} catch (err) {
+		console.log(err);
+	}
 };
