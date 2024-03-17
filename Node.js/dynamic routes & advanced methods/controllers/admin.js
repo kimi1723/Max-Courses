@@ -13,10 +13,18 @@ exports.postAddProduct = async (req, res, next) => {
 	const imageUrl = req.body.imageUrl;
 	const price = req.body.price;
 	const description = req.body.description;
-	const product = new Product(null, title, imageUrl, description, price);
-	await product.save(res);
 
-	res.redirect('/');
+	try {
+		const res = await Product.create({
+			title,
+			price,
+			description,
+			imageUrl,
+		});
+		console.log('Created product');
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 exports.getEditProduct = (req, res, next) => {
