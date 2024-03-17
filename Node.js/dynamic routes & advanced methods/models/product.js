@@ -10,16 +10,24 @@ module.exports = class Product {
 		this.price = price;
 	}
 
-	async save() {
+	async save(res) {
 		try {
 			const { title, price, description, imageUrl } = this;
 
-			const res = await db.execute(
-				`INSERT INTO 'node-complete-course'.'products' ('title', 'price', 'description', 'imageUrl') VALUES ('${title}', '${price}', '${description}', '${imageUrl}')`,
-			);
+			const res = await db.execute(`INSERT INTO products (title, price, description, imageUrl) VALUES (?, ?, ?, ?)`, [
+				title,
+				price,
+				imageUrl,
+				description,
+			]);
 
 			return res;
 		} catch (err) {
+			if (res) {
+				console.log(err);
+				return res.render('404', { pageTitle: 'Something went wrong', path: '/404' });
+			}
+
 			return { error: true, errorData: err };
 		}
 	}
@@ -32,8 +40,12 @@ module.exports = class Product {
 
 			return data;
 		} catch (err) {
-			console.log(err);
-			return res.render('404', { pageTitle: 'Something went wrong', path: '/404' });
+			if (res) {
+				console.log(err);
+				return res.render('404', { pageTitle: 'Something went wrong', path: '/404' });
+			}
+
+			return { error: true, errorData: err };
 		}
 	}
 

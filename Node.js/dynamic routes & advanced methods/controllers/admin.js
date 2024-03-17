@@ -14,8 +14,7 @@ exports.postAddProduct = async (req, res, next) => {
 	const price = req.body.price;
 	const description = req.body.description;
 	const product = new Product(null, title, imageUrl, description, price);
-	const es = await product.save();
-	console.log(es);
+	await product.save(res);
 
 	res.redirect('/');
 };
