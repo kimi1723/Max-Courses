@@ -11,16 +11,20 @@ exports.getProducts = async (req, res, next) => {
 	});
 };
 
-exports.getProduct = (req, res, next) => {
+exports.getProduct = async (req, res, next) => {
 	const productId = req.params.productId;
 
-	Product.findById(productId, product => {
+	try {
+		const [[product]] = await Product.findById(productId);
+
 		res.render('shop/product-detail', {
 			pageTitle: product.title,
 			path: `/products`,
-			product,
+			product: product,
 		});
-	});
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 exports.getIndex = async (req, res, next) => {
