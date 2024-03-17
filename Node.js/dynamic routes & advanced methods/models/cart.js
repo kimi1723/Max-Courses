@@ -1,10 +1,14 @@
 const fs = require('fs');
 const { getPath } = require('../util/path');
+const { fetchData } = require('../util/database');
 
 const path = getPath(['data'], 'cart.json');
 
 module.exports = class Cart {
-	static addProduct(id, productPrice) {
+	static async addProducta(id, productPrice) {
+		let cart = [];
+		const data = await fetchData();
+
 		fs.readFile(path, (err, fileContent) => {
 			let cart = { products: [], totalPrice: 0 };
 

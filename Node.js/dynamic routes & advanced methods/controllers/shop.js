@@ -1,29 +1,11 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-const fetchData = async () => {
-	try {
-		const [rows] = await Product.fetchAll();
-
-		return rows;
-	} catch (err) {
-		return {
-			error: true,
-			errorData: err,
-		};
-	}
-};
-
 exports.getProducts = async (req, res, next) => {
-	const data = await fetchData();
-
-	if (data.error) {
-		console.log(data.errorData);
-		return res.render('404', { pageTitle: 'Not found', path: '/404' });
-	}
+	const [rows] = await Product.fetchAll(res);
 
 	res.render('shop/product-list', {
-		prods: data,
+		prods: rows,
 		pageTitle: 'All Products',
 		path: '/products',
 	});
@@ -42,15 +24,10 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = async (req, res, next) => {
-	const data = await fetchData();
-
-	if (data.error) {
-		console.log(data.errorData);
-		return res.render('404', { pageTitle: 'Not found', path: '/404' });
-	}
+	const [rows] = await Product.fetchAll(res);
 
 	res.render('shop/index', {
-		prods: data,
+		prods: rows,
 		pageTitle: 'Shop',
 		path: '/',
 	});

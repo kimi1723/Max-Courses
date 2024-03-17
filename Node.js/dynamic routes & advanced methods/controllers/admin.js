@@ -8,13 +8,15 @@ exports.getAddProduct = (req, res, next) => {
 	});
 };
 
-exports.postAddProduct = (req, res, next) => {
+exports.postAddProduct = async (req, res, next) => {
 	const title = req.body.title;
 	const imageUrl = req.body.imageUrl;
 	const price = req.body.price;
 	const description = req.body.description;
 	const product = new Product(null, title, imageUrl, description, price);
-	product.save();
+	const es = await product.save();
+	console.log(es);
+
 	res.redirect('/');
 };
 
