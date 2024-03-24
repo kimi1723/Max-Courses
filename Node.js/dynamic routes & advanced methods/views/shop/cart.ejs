@@ -6,14 +6,14 @@
             <main>
                 <% if (products.length> 0) { %>
                     <ul>
-                        <% products.forEach(({productData, quantity, price})=> { %>
+                        <% products.forEach(({title, cartItem, price, id})=> { %>
                             <li>
                                 <p>
-                                    <%= productData.title %> (<%= quantity %>) x $<%= productData.price %>
+                                    <%= title %> (<%= cartItem.quantity %>) x $<%= price %>
                                 </p>
                                 <form action="/cart-delete-product" method="POST">
-                                    <input type="hidden" name="productId" value="<%= productData.id %>">
-                                    <input type="hidden" name="productPrice" value="<%= productData.price %>">
+                                    <input type="hidden" name="productId" value="<%= id %>">
+                                    <input type="hidden" name="productPrice" value="<%= price %>">
                                     <button class="btn">Delete</button>
                                 </form>
                             </li>
