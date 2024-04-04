@@ -36,6 +36,6 @@ app.use(async (req, res, next) => {
 
 app.use(errorController.get404);
 
-connectMongo(client => {
+connectMongo(() => {
 	app.listen(3000);
 });
