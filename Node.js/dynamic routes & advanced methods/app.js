@@ -6,10 +6,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
-const connectMongo = require('./util/database');
+const { connectMongo } = require('./util/database');
 
-// const adminRoutes = require('./routes/admin');
-// const shopRoutes = require('./routes/shop');
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
 const app = express();
 
@@ -31,8 +31,8 @@ app.use(async (req, res, next) => {
 	next();
 });
 
-// app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
 app.use(errorController.get404);
 

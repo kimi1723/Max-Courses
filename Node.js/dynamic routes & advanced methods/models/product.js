@@ -11,9 +11,22 @@ class Product {
 		const db = getDb();
 
 		try {
-			const res = db.collection('products').insertOne(this);
+			const res = await db.collection('products').insertOne(this);
 
 			console.log(res);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	static async fetchAll() {
+		const db = getDb();
+
+		try {
+			const products = await db.collection('products').find().toArray();
+
+			console.log(products);
+			return products;
 		} catch (err) {
 			console.log(err);
 		}
