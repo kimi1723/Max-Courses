@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const { getDb } = require('../util/database');
 class Product {
 	constructor(title, price, description, imageUrl) {
@@ -27,6 +28,19 @@ class Product {
 
 			console.log(products);
 			return products;
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	static async findById(id) {
+		const db = getDb();
+
+		try {
+			const product = await db.collection('products').findOne({ _id: ObjectId.createFromHexString(id) });
+
+			console.log(product);
+			return product;
 		} catch (err) {
 			console.log(err);
 		}
