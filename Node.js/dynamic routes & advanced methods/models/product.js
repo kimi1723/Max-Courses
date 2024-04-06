@@ -6,7 +6,7 @@ class Product {
 		this.price = price;
 		this.description = description;
 		this.imageUrl = imageUrl;
-		this._id = ObjectId.createFromHexString(id);
+		this._id = id && ObjectId.createFromHexString(id);
 	}
 
 	async save() {
@@ -48,6 +48,18 @@ class Product {
 
 			console.log(product);
 			return product;
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	static async deleteById(id) {
+		const db = getDb();
+
+		try {
+			await db.collection('products').deleteOne({ _id: ObjectId.createFromHexString(id) });
+
+			console.log('Deleted!');
 		} catch (err) {
 			console.log(err);
 		}
