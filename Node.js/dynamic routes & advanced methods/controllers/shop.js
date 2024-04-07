@@ -44,29 +44,27 @@ exports.getIndex = async (req, res, next) => {
 	}
 };
 
-// exports.getCart = async (req, res, next) => {
-// 	try {
-// 		const cart = await req.user.getCart();
-// 		const products = await cart.getProducts();
-
-// 		res.render('shop/cart', {
-// 			path: '/cart',
-// 			pageTitle: 'Your Cart',
-// 			products,
-// 		});
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
+exports.getCart = async (req, res, next) => {
+	try {
+		const products = await req.user.getCart();
+		console.log(products);
+		res.render('shop/cart', {
+			path: '/cart',
+			pageTitle: 'Your Cart',
+			products,
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
 
 exports.postCart = async (req, res, next) => {
 	const productId = req.body.productId;
 
 	try {
 		const product = await Product.findById(productId);
-		const res = await req.user.addToCart(product);
+		await req.user.addToCart(product);
 
-		console.log(res);
 		// const cart = await req.user.getCart();
 		// const cartProducts = await cart.getProducts({ where: { id: productId } });
 
@@ -97,24 +95,24 @@ exports.postCart = async (req, res, next) => {
 	}
 };
 
-// exports.postCartDeleteProduct = (req, res, next) => {
-// 	const { productId, productPrice } = req.body;
+exports.postCartDeleteProduct = (req, res, next) => {
+	const { productId, productPrice } = req.body;
+	const { quantity } = req.query;
 
-// 	Cart.deleteProduct(productId, productPrice);
+	req.user.deleteProduct({ productId, quantity });
+	res.redirect('/cart');
+};
 
-// 	res.redirect('/cart');
-// };
+exports.getOrders = (req, res, next) => {
+	res.render('shop/orders', {
+		path: '/orders',
+		pageTitle: 'Your Orders',
+	});
+};
 
-// exports.getOrders = (req, res, next) => {
-// 	res.render('shop/orders', {
-// 		path: '/orders',
-// 		pageTitle: 'Your Orders',
-// 	});
-// };
-
-// exports.getCheckout = (req, res, next) => {
-// 	res.render('shop/checkout', {
-// 		path: '/checkout',
-// 		pageTitle: 'Checkout',
-// 	});
-// };
+exports.getCheckout = (req, res, next) => {
+	res.render('shop/checkout', {
+		path: '/checkout',
+		pageTitle: 'Checkout',
+	});
+};
