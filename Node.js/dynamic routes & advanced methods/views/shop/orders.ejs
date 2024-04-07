@@ -3,7 +3,27 @@
 
     <body>
         <%- include('../includes/navigation.ejs') %>
-        <main>
-            <h1>Nothing there!</h1>
-        </main>
-        <%- include('../includes/end.ejs') %>
+            <main>
+
+                <% if (orders.length <=0) { %>
+                    <h1>Nothing there</h1>
+                    <% } else { %>
+                        <h1>Your orders:</h1>
+                        <ul class="orders">
+                            <% orders.forEach(order=> { %>
+                                <li class="orders__item">
+                                    <h2>Order - # <%= order._id %>
+                                    </h2>
+                                    <ul class="orders__products">
+                                        <% order.items.forEach(item=> { %>
+                                            <li class="orders__product-item">
+                                                <%= item.title %> (<%= item.price %>) x <%= item.quantity %>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <% } %>
+            </main>
+            <%- include('../includes/end.ejs') %>

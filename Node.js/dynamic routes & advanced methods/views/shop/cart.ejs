@@ -25,6 +25,10 @@
                             </li>
                             <% }) %>
                     </ul>
+
+                    <form action="/create-order" method="POST">
+                        <button class="btn">Order now</button>
+                    </form>
                     <% } else { %>
                         <h1>No products in Cart!</h1>
                         <% } %>

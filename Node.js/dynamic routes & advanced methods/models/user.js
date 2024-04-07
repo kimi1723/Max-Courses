@@ -73,17 +73,11 @@ class User {
 		try {
 			if (quantity === 'all' || quantity >= productQuantity) {
 				updatedCartItems = cartItems.filter(i => i.productId.toString() !== productId.toString());
-
-				console.log('Deleting an entrance');
 			} else {
 				const index = cartItems.findIndex(i => i.productId.toString() === productId.toString());
 
 				cartItems[index].quantity = productQuantity - 1;
 				updatedCartItems = cartItems;
-
-				console.log(updatedCartItems);
-
-				console.log('Deleting a quantity');
 			}
 
 			const updatedCart = {
@@ -93,6 +87,43 @@ class User {
 			const res = await db.collection('users').updateOne({ _id: this._id }, { $set: { cart: updatedCart } });
 
 			console.log(res);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async addOrder() {
+		const db = getDb();
+
+		try {
+			const products = await this.getCart();
+
+			const order = {
+				user: {
+					_id: this._id,
+					name: this.name,
+					email: this.email,
+				},
+				items: products,
+			};
+
+			await db.collection('orders').insertOne(order);
+			this.cart.items = [];
+
+			const res = await db.collection('users').updateOne({ _id: this._id }, { $set: { cart: { items: [] } } });
+			console.log(res);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async getOrders() {
+		const db = getDb();
+
+		try {
+			const res = await db.collection('orders').find({ 'user._id': this._id }).toArray();
+
+			return res;
 		} catch (err) {
 			console.log(err);
 		}
