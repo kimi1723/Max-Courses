@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongodb');
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
@@ -14,7 +13,7 @@ exports.postAddProduct = async (req, res, next) => {
 	const imageUrl = req.body.imageUrl;
 	const price = req.body.price;
 	const description = req.body.description;
-	const product = new Product({ title, price, description, imageUrl, userId: req.user._id });
+	const product = new Product({ title, price, description, imageUrl });
 
 	try {
 		await product.save();
@@ -58,7 +57,9 @@ exports.postEditProduct = async (req, res, next) => {
 	const { productId, title, price, imageUrl, description } = req.body;
 
 	try {
-		const product = new Product({ title, price, description, imageUrl, productId });
+		const product = await Product.findById(productId);
+		Object.assign(product, { title, price, description, imageUrl });
+		console.log(product);
 
 		await product.save();
 
@@ -73,7 +74,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 	const { productId } = req.body;
 
 	try {
-		await Product.deleteById(productId);
+		await Product.findByIdAndDelete(productId);
 
 		console.log('Product destroyed');
 		res.redirect('/admin/products');
@@ -84,7 +85,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
 	try {
-		const products = await Product.fetchAll();
+		const products = await Product.find();
 
 		res.render('admin/products', {
 			prods: products,

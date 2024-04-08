@@ -2,7 +2,7 @@ const Product = require('../models/product');
 
 exports.getProducts = async (req, res, next) => {
 	try {
-		const products = await Product.fetchAll();
+		const products = await Product.find();
 
 		res.render('shop/index', {
 			prods: products,
@@ -32,8 +32,8 @@ exports.getProduct = async (req, res, next) => {
 
 exports.getIndex = async (req, res, next) => {
 	try {
-		const products = await Product.fetchAll();
-
+		const products = await Product.find();
+		console.log(products);
 		res.render('shop/index', {
 			prods: products,
 			pageTitle: 'Shop',
