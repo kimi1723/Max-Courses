@@ -48,6 +48,28 @@ userSchema.methods.addToCart = async function (product) {
 	}
 };
 
+userSchema.methods.removeFromCart = function ({ productId, quantity }) {
+	const cartItems = this.cart.items;
+	const productQuantity = cartItems.find(i => i.productId.toString() === productId.toString()).quantity;
+
+	try {
+		if (quantity === 'all' || quantity >= productQuantity) {
+			updatedCartItems = cartItems.filter(i => i.productId.toString() !== productId.toString());
+		} else {
+			const index = cartItems.findIndex(i => i.productId.toString() === productId.toString());
+
+			cartItems[index].quantity = productQuantity - 1;
+			updatedCartItems = cartItems;
+		}
+
+		this.cart.items = updatedCartItems;
+
+		return this.save();
+	} catch (err) {
+		console.log(err);
+	}
+};
+
 module.exports = mongoose.model('User', userSchema);
 
 // class User {
@@ -58,65 +80,8 @@ module.exports = mongoose.model('User', userSchema);
 // 		this._id = _id;
 // 	}
 
-// 	async save() {
-// 		const db = getDb();
-
-// 		try {
-// 			const res = await db.collection('users').insertOne(this);
-// 		} catch (err) {
-// 			console.log(err);
-// 		}
-// 	}
-
-// 	async addToCart(product) {
-
-// 	}
-
-// 	async getCart() {
-// 		const db = getDb();
-// 		const productIds = this.cart.items.map(item => item.productId);
-
-// 		try {
-// 			const products = await db
-// 				.collection('products')
-// 				.find({ _id: { $in: productIds } })
-// 				.toArray();
-
-// 			return products.map(p => ({
-// 				...p,
-// 				quantity: this.cart.items.find(i => i.productId.toString() === p._id.toString()).quantity,
-// 			}));
-// 		} catch (err) {
-// 			console.log(err);
-// 		}
-// 	}
-
 // 	async deleteProduct({ productId, quantity }) {
-// 		const db = getDb();
-// 		const cartItems = this.cart.items;
-// 		const productQuantity = cartItems.find(i => i.productId.toString() === productId.toString()).quantity;
-// 		let updatedCartItems;
 
-// 		try {
-// 			if (quantity === 'all' || quantity >= productQuantity) {
-// 				updatedCartItems = cartItems.filter(i => i.productId.toString() !== productId.toString());
-// 			} else {
-// 				const index = cartItems.findIndex(i => i.productId.toString() === productId.toString());
-
-// 				cartItems[index].quantity = productQuantity - 1;
-// 				updatedCartItems = cartItems;
-// 			}
-
-// 			const updatedCart = {
-// 				items: updatedCartItems,
-// 			};
-
-// 			const res = await db.collection('users').updateOne({ _id: this._id }, { $set: { cart: updatedCart } });
-
-// 			console.log(res);
-// 		} catch (err) {
-// 			console.log(err);
-// 		}
 // 	}
 
 // 	async addOrder() {
