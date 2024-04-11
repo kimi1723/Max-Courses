@@ -12,9 +12,41 @@ const userSchema = new Schema({
 		required: true,
 	},
 	cart: {
-		items: [{ productId: { type: Schema.Types.ObjectId }, quantity: { type: Number, required: true } }],
+		items: [
+			{
+				productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+				quantity: { type: Number, required: true },
+			},
+		],
 	},
 });
+
+userSchema.methods.addToCart = async function (product) {
+	const cartItems = this.cart.items;
+
+	const cartProductIndex = cartItems.findIndex(cp => cp.productId.toString() === product._id.toString());
+	const updatedCartItems = [...cartItems];
+	let newQuantity = 1;
+
+	if (cartProductIndex >= 0) {
+		newQuantity = cartItems[cartProductIndex].quantity + 1;
+		updatedCartItems[cartProductIndex].quantity = newQuantity;
+	} else {
+		updatedCartItems.push({ productId: product._id, quantity: newQuantity });
+	}
+
+	const updatedCart = {
+		items: updatedCartItems,
+	};
+
+	this.cart = updatedCart;
+
+	try {
+		return await this.save();
+	} catch (err) {
+		console.log(err);
+	}
+};
 
 module.exports = mongoose.model('User', userSchema);
 
@@ -37,30 +69,7 @@ module.exports = mongoose.model('User', userSchema);
 // 	}
 
 // 	async addToCart(product) {
-// 		const cartItems = this.cart.items;
 
-// 		const cartProductIndex = cartItems.findIndex(cp => cp.productId.toString() === product._id.toString());
-// 		const updatedCartItems = [...cartItems];
-// 		let newQuantity = 1;
-
-// 		if (cartProductIndex >= 0) {
-// 			newQuantity = cartItems[cartProductIndex].quantity + 1;
-// 			updatedCartItems[cartProductIndex].quantity = newQuantity;
-// 		} else {
-// 			updatedCartItems.push({ productId: product._id, quantity: newQuantity });
-// 		}
-
-// 		const updatedCart = {
-// 			items: updatedCartItems,
-// 		};
-
-// 		const db = getDb();
-
-// 		try {
-// 			return await db.collection('users').updateOne({ _id: this._id }, { $set: { cart: updatedCart } });
-// 		} catch (err) {
-// 			console.log(err);
-// 		}
 // 	}
 
 // 	async getCart() {

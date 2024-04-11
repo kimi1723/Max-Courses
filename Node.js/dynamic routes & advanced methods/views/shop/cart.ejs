@@ -6,7 +6,7 @@
             <main>
                 <% if (products.length> 0) { %>
                     <ul>
-                        <% products.forEach(({title, quantity, price, _id})=> { %>
+                        <% products.forEach(({productId: { title, _id, price }, quantity })=> { %>
                             <li>
                                 <p>
                                     <%= title %> (<%= quantity %>) x $<%= price %>
