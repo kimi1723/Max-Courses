@@ -52,7 +52,7 @@ exports.getCart = async (req, res, next) => {
 	try {
 		const {
 			cart: { items: products },
-		} = await req.session.user.populate('cart.items.productId');
+		} = await req.user.populate('cart.items.productId');
 		console.log(products);
 
 		res.render('shop/cart', {
@@ -71,7 +71,7 @@ exports.postCart = async (req, res, next) => {
 
 	try {
 		const product = await Product.findById(productId);
-		await req.session.user.addToCart(product);
+		await req.user.addToCart(product);
 
 		return res.redirect('/cart');
 	} catch (err) {
@@ -85,7 +85,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 	const { productId } = req.body;
 	const { quantity } = req.query;
 
-	req.session.user.removeFromCart({ productId, quantity });
+	req.user.removeFromCart({ productId, quantity });
 	res.redirect('/cart');
 };
 
@@ -93,15 +93,15 @@ exports.postOrder = async (req, res, next) => {
 	try {
 		const {
 			cart: { items: products },
-		} = await req.session.user.populate('cart.items.productId');
+		} = await req.user.populate('cart.items.productId');
 
 		const order = new Order({
-			user: { name: req.session.user.name, userId: req.session.user },
+			user: { name: req.user.name, userId: req.user },
 			products: products.map(i => ({ quantity: i.quantity, productData: { ...i.productId._doc } })),
 		});
 
 		await order.save();
-		await req.session.user.clearCart();
+		await req.user.clearCart();
 
 		res.redirect('/orders');
 	} catch (err) {
@@ -111,7 +111,7 @@ exports.postOrder = async (req, res, next) => {
 };
 
 exports.getOrders = async (req, res, next) => {
-	const orders = await Order.find({ 'user.userId': req.session.user._id });
+	const orders = await Order.find({ 'user.userId': req.user._id });
 
 	res.render('shop/orders', {
 		path: '/orders',
