@@ -5,7 +5,7 @@ exports.getAddProduct = (req, res, next) => {
 		pageTitle: 'Add Product',
 		path: '/admin/add-product',
 		editing: false,
-		isAuthenticated: req.isLoggedIn,
+		isAuthenticated: req.session.isLoggedIn,
 	});
 };
 
@@ -48,7 +48,7 @@ exports.getEditProduct = async (req, res, next) => {
 			path: '/admin/products',
 			editing: editMode,
 			product,
-			isAuthenticated: req.isLoggedIn,
+			isAuthenticated: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		console.log(err);
@@ -93,7 +93,7 @@ exports.getProducts = async (req, res, next) => {
 			prods: products,
 			pageTitle: 'Admin Products',
 			path: '/admin/products',
-			isAuthenticated: req.isLoggedIn,
+			isAuthenticated: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		console.log(err);
