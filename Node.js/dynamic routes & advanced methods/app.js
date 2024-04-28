@@ -52,17 +52,6 @@ app.use(errorController.get404);
 (async () => {
 	try {
 		await mongoose.connect(MONGODB_URI);
-		const user = User.findOne();
-
-		if (!user) {
-			const user = new User({
-				name: 'Patrick',
-				email: 'patrick@example.com',
-				items: [],
-			});
-
-			user.save();
-		}
 
 		app.listen(3000);
 	} catch (err) {
