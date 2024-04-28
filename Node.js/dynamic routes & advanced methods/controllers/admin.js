@@ -60,6 +60,9 @@ exports.postEditProduct = async (req, res, next) => {
 
 	try {
 		const product = await Product.findById(productId);
+
+		if (product.userId.toString() !== req.user._id.toString()) return res.redirect('/');
+
 		Object.assign(product, { title, price, description, imageUrl });
 		console.log(product);
 
@@ -76,7 +79,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 	const { productId } = req.body;
 
 	try {
-		await Product.findByIdAndDelete(productId);
+		await Product.deleteOne({ _id: productId, userId: req.user._id });
 
 		console.log('Product destroyed');
 		res.redirect('/admin/products');
