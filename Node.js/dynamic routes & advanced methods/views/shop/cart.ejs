@@ -15,12 +15,14 @@
                                     <input type="hidden" name="productId" value="<%= _id %>">
                                     <input type="hidden" name="productPrice" value="<%= price %>">
                                     <button class="btn">Delete one</button>
+                                    <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
                                 </form>
 
                                 <form action="/cart-delete-product?quantity=all" method="POST">
                                     <input type="hidden" name="productId" value="<%= _id %>">
                                     <input type="hidden" name="productPrice" value="<%= price %>">
                                     <button class="btn">Delete all</button>
+                                    <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
                                 </form>
                             </li>
                             <% }) %>
@@ -28,6 +30,7 @@
 
                     <form action="/create-order" method="POST">
                         <button class="btn">Order now</button>
+                        <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
                     </form>
                     <% } else { %>
                         <h1>No products in Cart!</h1>

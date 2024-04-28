@@ -41,7 +41,6 @@ exports.getIndex = async (req, res, next) => {
 			prods: products,
 			pageTitle: 'Shop',
 			path: '/',
-			isAuthenticated: req.session.isLoggedIn,
 		});
 	} catch (err) {
 		console.log(err);
@@ -96,7 +95,7 @@ exports.postOrder = async (req, res, next) => {
 		} = await req.user.populate('cart.items.productId');
 
 		const order = new Order({
-			user: { name: req.user.name, userId: req.user },
+			user: { name: req.user.email, userId: req.user },
 			products: products.map(i => ({ quantity: i.quantity, productData: { ...i.productId._doc } })),
 		});
 
