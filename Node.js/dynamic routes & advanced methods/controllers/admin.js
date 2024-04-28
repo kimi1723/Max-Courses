@@ -87,7 +87,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
 	try {
-		const products = await Product.find();
+		const products = await Product.find({ userId: req.user._id });
 
 		res.render('admin/products', {
 			prods: products,
