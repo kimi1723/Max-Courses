@@ -6,6 +6,7 @@ exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
 		path: '/login',
 		pageTitle: 'Login',
+		errorMessage: req.flash('error'),
 	});
 };
 
@@ -14,6 +15,7 @@ exports.getSignup = async (req, res, next) => {
 		path: '/signup',
 		pageTitle: this.getSignup,
 		isAuthenticated: false,
+		errorMessage: req.flash('error'),
 	});
 };
 
@@ -23,11 +25,17 @@ exports.postLogin = async (req, res, next) => {
 	try {
 		const user = await User.findOne({ email });
 
-		if (!user) return res.redirect('/login');
+		if (!user) {
+			req.flash('error', 'Invalid credentials');
+			return res.redirect('/login');
+		}
 
 		const isValidPassword = await bcrypt.compare(password, user.password);
 
-		if (!isValidPassword) return res.redirect('/login');
+		if (!isValidPassword) {
+			req.flash('error', 'Invalid credentials');
+			return res.redirect('/login');
+		}
 
 		req.session.user = user;
 		req.session.isLoggedIn = true;
@@ -47,7 +55,10 @@ exports.postSignup = async (req, res, next) => {
 	try {
 		const isUser = await User.findOne({ email: email });
 
-		if (isUser) return res.redirect('/login');
+		if (isUser) {
+			req.flash('error', 'Email already in use');
+			return res.redirect('/signup');
+		}
 
 		const hashedPassword = await bcrypt.hash(password, 12);
 
