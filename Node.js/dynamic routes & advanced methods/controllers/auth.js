@@ -19,8 +19,16 @@ exports.getSignup = async (req, res, next) => {
 };
 
 exports.postLogin = async (req, res, next) => {
+	const { email, password } = req.body;
+
 	try {
-		const user = await User.findById(process.env.DB_MAIN_USER_ID);
+		const user = await User.findOne({ email });
+
+		if (!user) return res.redirect('/login');
+
+		const isValidPassword = await bcrypt.compare(password, user.password);
+
+		if (!isValidPassword) return res.redirect('/login');
 
 		req.session.user = user;
 		req.session.isLoggedIn = true;
