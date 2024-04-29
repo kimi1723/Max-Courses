@@ -110,12 +110,6 @@ exports.postSignup = async (req, res, next) => {
 
 	try {
 		const isUser = await User.findOne({ email: email });
-
-		if (isUser) {
-			req.flash('error', 'Email already in use');
-			return res.redirect('/signup');
-		}
-
 		const hashedPassword = await bcrypt.hash(password, 12);
 
 		const user = new User({
