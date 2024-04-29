@@ -21,6 +21,7 @@ exports.getLogin = (req, res, next) => {
 		pageTitle: 'Login',
 		errorMessage: req.flash('error'),
 		notification: req.flash('notification'),
+		oldInput: '',
 	});
 };
 
@@ -29,6 +30,7 @@ exports.getSignup = async (req, res, next) => {
 		path: '/signup',
 		pageTitle: 'Signup',
 		errorMessage: req.flash('error'),
+		oldInput: '',
 	});
 };
 
@@ -68,21 +70,20 @@ exports.getNewPassword = async (req, res, next) => {
 
 exports.postLogin = async (req, res, next) => {
 	const { email, password } = req.body;
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return res.status(422).render('auth/login', {
+			path: '/login',
+			pageTitle: 'Login',
+			errorMessage: errors.array()[0].msg,
+			notification: req.flash('notification'),
+			oldInput: { email, password },
+		});
+	}
 
 	try {
 		const user = await User.findOne({ email });
-
-		if (!user) {
-			req.flash('error', 'Invalid credentials');
-			return res.redirect('/login');
-		}
-
-		const isValidPassword = await bcrypt.compare(password, user.password);
-
-		if (!isValidPassword) {
-			req.flash('error', 'Invalid credentials');
-			return res.redirect('/login');
-		}
 
 		req.session.user = user;
 		req.session.isLoggedIn = true;
@@ -105,6 +106,7 @@ exports.postSignup = async (req, res, next) => {
 			path: '/signup',
 			pageTitle: 'Signup',
 			errorMessage: errors.array()[0].msg,
+			oldInput: { email, password, confirmPassword },
 		});
 	}
 

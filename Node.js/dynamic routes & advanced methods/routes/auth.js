@@ -1,5 +1,7 @@
 const express = require('express');
 const { check, body } = require('express-validator');
+const bcrypt = require('bcryptjs');
+
 const User = require('../models/user');
 
 const authController = require('../controllers/auth');
@@ -14,7 +16,32 @@ router.get('/reset-password', authController.getResetPassword);
 
 router.get('/new-password/:token', authController.getNewPassword);
 
-router.post('/login', authController.postLogin);
+router.post(
+	'/login',
+	[
+		check('email')
+			.isEmail()
+			.withMessage('Please enter a valid email')
+			.custom(async (value, { req }) => {
+				const userDoc = await User.findOne({ email: value });
+
+				if (!userDoc) throw new Error(`User doesn't exist`);
+
+				return true;
+			}),
+		check('password').custom(async (value, { req }) => {
+			const { email } = req.body;
+			const user = await User.findOne({ email });
+
+			const isValidPassword = await bcrypt.compare(value, user.password);
+
+			if (!isValidPassword) throw new Error('Invalid password');
+
+			return true;
+		}),
+	],
+	authController.postLogin,
+);
 
 router.post(
 	'/signup',
@@ -24,8 +51,6 @@ router.post(
 			.withMessage('Please enter a valid email.')
 			.custom(async (value, { req }) => {
 				const userDoc = await User.findOne({ email: value });
-				console.log(userDoc);
-				console.log(value);
 
 				if (userDoc) throw new Error('User with this email exists already');
 
