@@ -13,6 +13,12 @@ router.get('/products', shopController.getProducts);
 
 router.get('/products/:productId', shopController.getProduct);
 
+router.get('/checkout', isAuth, shopController.getCheckout);
+
+router.get('/checkout/success', shopController.postOrder);
+
+router.get('/checkout/cancel', shopController.getCheckout);
+
 router.get('/cart', isAuth, shopController.getCart);
 
 router.post('/cart', isAuth, shopController.postCart);

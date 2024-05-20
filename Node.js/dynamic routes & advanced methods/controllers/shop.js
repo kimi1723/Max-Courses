@@ -1,5 +1,7 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
+const product = require('../models/product');
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
 
 const ITEMS_PER_PAGE = 1;
 
@@ -134,10 +136,36 @@ exports.getOrders = async (req, res, next) => {
 	});
 };
 
-exports.getCheckout = (req, res, next) => {
-	res.render('shop/checkout', {
-		path: '/checkout',
-		pageTitle: 'Checkout',
-		isAuthenticated: req.session.isLoggedIn,
-	});
+exports.getCheckout = async (req, res, next) => {
+	try {
+		const {
+			cart: { items: products },
+		} = await req.user.populate('cart.items.productId');
+		const totalSum = products.reduce((acc, value) => acc + value.productId.price, 0);
+
+		const session = await stripe.checkout.sessions.create({
+			line_items: products.map(p => ({
+				price_data: {
+					product_data: { name: p.productId.title },
+					unit_amount_decimal: p.productId.price * 100,
+					currency: 'usd',
+				},
+				quantity: p.quantity,
+			})),
+			success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+			cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel',
+			mode: 'payment',
+		});
+
+		res.render('shop/checkout', {
+			path: '/checkout',
+			pageTitle: 'Checkout',
+			products,
+			isAuthenticated: req.session.isLoggedIn,
+			totalSum,
+			sessionId: session.id,
+		});
+	} catch (err) {
+		console.log(err);
+	}
 };

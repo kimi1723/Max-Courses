@@ -27,13 +27,13 @@
                             </li>
                             <% }) %>
                     </ul>
-
-                    <form action="/create-order" method="POST">
+                    <a class="btn" href="/checkout">Order now</a>
+                    <!-- <form action="/create-order" method="POST">
                         <button class="btn">Order now</button>
                         <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
                     </form>
                     <% } else { %>
                         <h1>No products in Cart!</h1>
-                        <% } %>
+                        <% } %> -->
             </main>
             <%- include('../includes/end.ejs') %>
