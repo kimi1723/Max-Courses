@@ -75,16 +75,16 @@ exports.postEditProduct = async (req, res, next) => {
 	}
 };
 
-exports.postDeleteProduct = async (req, res, next) => {
-	const { productId } = req.body;
+exports.deleteProduct = async (req, res, next) => {
+	const { productId } = req.params;
 
 	try {
 		await Product.deleteOne({ _id: productId, userId: req.user._id });
 
 		console.log('Product destroyed');
-		res.redirect('/admin/products');
+		res.status(200).json({ message: 'Success!' });
 	} catch (err) {
-		console.log(err);
+		res.status(500).json({ message: 'Deleting product failed!' });
 	}
 };
 
