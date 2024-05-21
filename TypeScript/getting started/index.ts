@@ -1,18 +1,7 @@
-const submitBtn = document.getElementById('submit') as HTMLButtonElement;
-const num1 = document.getElementById('num1') as HTMLInputElement;
-const num2 = document.getElementById('num2') as HTMLInputElement;
-
-enum Direction {
-	Up = 1,
-	Down,
-	Left,
-	Right,
+function merge<T extends object, U extends keyof T>(objA: T, key: U) {
+	return objA[key];
 }
 
-const dir = { up: 1, down: 2 } as const;
+const mergedObj = merge({ name: 'elo' }, 'name');
 
-const add = (num1: number, num2: number) => {
-	console.log(num1 + num2);
-};
-
-submitBtn?.addEventListener('click', () => add(+num1.value, +num2.value));
+console.log(mergedObj);
