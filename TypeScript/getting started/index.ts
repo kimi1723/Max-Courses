@@ -1,7 +1,16 @@
-function merge<T extends object, U extends keyof T>(objA: T, key: U) {
-	return objA[key];
+interface Greetable {
+	name: string;
+	greet(): void;
 }
 
-const mergedObj = merge({ name: 'elo' }, 'name');
+class Person implements Greetable {
+	name: string;
 
-console.log(mergedObj);
+	greet() {
+		console.log('elo');
+	}
+}
+
+const newOs = new Person();
+
+newOs.greet();

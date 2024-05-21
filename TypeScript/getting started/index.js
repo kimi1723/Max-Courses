@@ -1,5 +1,10 @@
-function merge(objA, key) {
-    return objA[key];
-}
-var mergedObj = merge({ name: 'elo' }, 'name');
-console.log(mergedObj);
+var Person = /** @class */ (function () {
+    function Person() {
+    }
+    Person.prototype.greet = function () {
+        console.log('elo');
+    };
+    return Person;
+}());
+var newOs = new Person();
+newOs.greet();
